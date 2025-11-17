@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYNERGY - 로그인</title>
+    <style>
+        /* === CSS 코드 전체 === */
+        
+        /* 1. ~ 7. (공통 CSS 복사) */
+        body { font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; margin: 0; padding: 0; background-color: #f4f7f6; }
+        header { grid-area: header; background-color: #ffffff; border-bottom: 1px solid #e0e0e0; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; }
+        header .logo-link { text-decoration: none; }
+        header .logo { font-size: 24px; font-weight: bold; color: #007bff; }
+        header .auth-links a { text-decoration: none; color: #555; margin-left: 15px; font-size: 14px; }
+        nav.top-nav { grid-area: nav; background-color: #ffffff; border-bottom: 1px solid #e0e0e0; display: flex; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .top-nav > ul { list-style: none; padding: 0; margin: 0; display: flex; }
+        .top-nav > ul > li { position: relative; }
+        .top-nav > ul > li > a { text-decoration: none; color: #333; font-weight: bold; font-size: 16px; display: block; padding: 15px 25px; line-height: 20px; }
+        .top-nav > ul > li > a:hover { color: #007bff; border-bottom: 2px solid #007bff; padding-bottom: 13px; }
+        .top-nav .sub-menu { display: none; position: absolute; top: 100%; left: 0; background-color: #ffffff; border: 1px solid #ddd; border-top: none; z-index: 1000; box-shadow: 0 4px 8px rgba(0,0,0,0.1); min-width: 180px; }
+        .top-nav .sub-menu li a { text-decoration: none; color: #555; font-size: 14px; display: block; padding: 10px 15px; }
+        .top-nav .sub-menu li a:hover { background-color: #f5f5f5; }
+        .top-nav .sub-sub-menu { display: none; position: absolute; top: 0; left: 100%; background-color: #ffffff; border: 1px solid #ddd; min-width: 160px; z-index: 1001; }
+        .top-nav .mega-menu { width: 800px; left: 50%; transform: translateX(-50%); padding: 20px; flex-wrap: wrap; }
+        .mega-menu .menu-column { width: 33.3%; padding: 0 15px; box-sizing: border-box; }
+        .mega-menu .menu-column h4 { font-size: 15px; color: #007bff; border-bottom: 1px solid #eee; padding-bottom: 8px; margin-top: 0; margin-bottom: 10px; }
+        .mega-menu .menu-column ul { list-style: none; padding: 0; margin: 0; }
+        .mega-menu .menu-column li { margin-bottom: 8px; }
+        .mega-menu .menu-column li a { padding: 5px 0; font-size: 14px; }
+        .mega-menu .menu-column li a:hover { background-color: transparent; text-decoration: underline; }
+        .top-nav > ul > li:hover > .sub-menu { display: block; }
+        .top-nav > ul > li:hover > .mega-menu { display: flex; }
+        .top-nav .sub-menu > li:hover > .sub-sub-menu { display: block; }
+        
+        /* ★ 8. (수정) 레이아웃 - 로그인 페이지는 사이드바 없음 ★ */
+        .container {
+            display: grid;
+            grid-template-rows: 60px 50px 1fr;
+            grid-template-columns: 1fr; /* 1컬럼 */
+            grid-template-areas:
+                "header"
+                "nav"
+                "main"; /* 사이드바(aside) 제거 */
+            min-height: 100vh;
+        }
+
+        /* 9. (수정) 메인 컨텐츠 - 로그인 폼 중앙 정렬 */
+        main {
+            grid-area: main;
+            padding: 50px 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* 가로 중앙 정렬 */
+        }
+        main h1 {
+            font-size: 28px;
+            color: #333;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+        }
+
+        /* ★ 10. (신규) 로그인 폼 스타일 ★ */
+        .login-form-container {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 400px; /* 폼 최대 너비 */
+            padding: 30px;
+            box-sizing: border-box;
+        }
+        .login-form-container .form-group {
+            margin-bottom: 20px;
+        }
+        .login-form-container label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .login-form-container input[type="text"],
+        .login-form-container input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box; /* 패딩 포함 너비 계산 */
+        }
+        .login-form-container .login-button {
+            width: 100%;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #ffffff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .login-form-container .login-button:hover {
+            background-color: #0056b3;
+        }
+        .login-form-container .links {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .login-form-container .links a {
+            color: #555;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        .login-form-container .links a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="index.html" class="logo-link"><div class="logo">SYNERGY</div></a>
+            <div class="auth-links">
+                <a href="login.html" style="color: #007bff;">로그인</a> <a href="#signup">회원가입</a>
+            </div>
+        </header>
+
+        <nav class="top-nav">
+             <ul>
+                <li><a href="jobs-list.html">📋 구인 공고</a> </li>
+                <li><a href="agency.html">🏛️ 기관 정보</a> </li>
+                <li><a href="guide.html">💡 합격 가이드</a> </li>
+                <li><a href="community.html">💬 커뮤니티</a> </li>
+                <li><a href="my-info.html">👤 나의 정보</a> </li>
+            </ul>
+        </nav>
+
+        <main>
+            <h1>로그인</h1>
+            <div class="login-form-container">
+                <form action="#" method="POST"> <div class="form-group">
+                        <label for="username">아이디</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">비밀번호</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="login-button">로그인</button>
+                    <div class="links">
+                        <a href="#signup">회원가입</a>
+                        <a href="#find-id">아이디/비밀번호 찾기</a>
+                    </div>
+                </form>
+            </div>
+        </main>
+
+        </div>
+</body>
+</html>
