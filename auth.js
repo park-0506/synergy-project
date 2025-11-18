@@ -4,7 +4,7 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded' () => {
     
     // --- 2. 로그인 상태 UI 관리 ---
     supabase.auth.onAuthStateChange((event, session) => {
@@ -114,4 +114,5 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
 
