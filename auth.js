@@ -120,4 +120,5 @@ if (loginForm) {
             window.location.href = 'my-info.html';
         }
     });
+
 }
