@@ -1,4 +1,4 @@
-// 1. Supabase 설정 (본인의 URL과 Key 확인 필수)
+// 1. Supabase 설정
 const SUPABASE_URL = 'https://gacfkefzipcatruzxnsh.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdhY2ZrZWZ6aXBjYXRydXp4bnNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzMTc2MjIsImV4cCI6MjA3ODg5MzYyMn0.8kObqZdx7gZw7QXSQ6qODA0EOTpxPj7IquST_chESZY';
 
@@ -15,12 +15,12 @@ document.addEventListener('DOMContentLoaded', () => {
         let logoutButton = document.getElementById('logout-button');
 
         if (session) {
-            // 로그인 상태일 때
+            // 로그인 상태
             if (loginLink) loginLink.style.display = 'none';
             if (signupLink) signupLink.style.display = 'none';
             if (myInfoLink) myInfoLink.style.display = 'inline-block';
 
-            // 로그아웃 버튼이 없으면 생성
+            // 로그아웃 버튼 생성
             if (myInfoLink && !logoutButton) {
                 logoutButton = document.createElement('a');
                 logoutButton.id = 'logout-button';
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (logoutButton) logoutButton.style.display = 'inline-block';
         } else {
-            // 로그아웃 상태일 때
+            // 로그아웃 상태
             if (loginLink) loginLink.style.display = 'inline-block';
             if (signupLink) signupLink.style.display = 'inline-block';
             if (myInfoLink) myInfoLink.style.display = 'none';
@@ -51,12 +51,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const signupForm = document.getElementById('signup-form');
     if (signupForm) {
         signupForm.addEventListener('submit', async (e) => {
-            e.preventDefault(); // 405 에러 방지 (매우 중요)
+            e.preventDefault();
 
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            // 수정: HTML id와 일치시킴 (password-confirm -> password_confirm)
-            const passwordConfirm = document.getElementById('password_confirm').value; 
+            // HTML의 id가 password_confirm 인지 password-confirm 인지 꼭 확인하세요.
+            // 아래는 안전하게 둘 다 찾도록 처리했습니다.
+            const passwordConfirmInput = document.getElementById('password_confirm') || document.getElementById('password-confirm');
+            const passwordConfirm = passwordConfirmInput ? passwordConfirmInput.value : '';
+
+            if (!passwordConfirmInput) {
+                console.error("비밀번호 확인 입력창을 찾을 수 없습니다. HTML ID를 확인하세요.");
+                return;
+            }
 
             if (password !== passwordConfirm) {
                 alert('비밀번호가 일치하지 않습니다.');
@@ -64,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
-                // 수정: [1] 같은 인용 번호 제거됨
+                // Supabase 회원가입 요청
                 const { data, error } = await supabase.auth.signUp({
                     email: email,
                     password: password,
@@ -74,10 +81,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 alert('회원가입 성공! 이메일을 확인해주세요.');
                 
-                // 프로필 테이블 추가 저장 (선택 사항)
-                await supabase.from('profiles').insert([
-                    { id: data.user.id, username: email.split('@') }
-                ]);
+                // [수정됨] 프로필 테이블 추가 저장 (배열 오류 수정: [0] 추가)
+                if (data.user) {
+                    const { error: profileError } = await supabase.from('profiles').insert([
+                        { 
+                            id: data.user.id, 
+                            username: email.split('@')[0] // 이메일 앞부분만 추출하여 문자열로 저장
+                        }
+                    ]);
+                    
+                    if (profileError) {
+                        console.error('프로필 저장 실패 (회원가입은 성공):', profileError);
+                    }
+                }
 
                 window.location.href = 'login.html';
 
@@ -87,25 +103,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 4. 로그인 로직 (수정됨) ---
+    // --- 4. 로그인 로직 ---
     const loginForm = document.getElementById('login-form');
     
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault(); // 1. 폼의 기본 제출 동작(새로고침)을 막습니다.
-            console.log("로그인 시도 시작..."); 
-
-            // [수정 포인트] HTML의 id="username"을 찾도록 변경했습니다.
-            const emailInput = document.getElementById('username');
+            e.preventDefault();
+            
+            // [수정됨] HTML의 id="username" 혹은 id="email" 둘 다 찾도록 호환성 개선
+            const emailInput = document.getElementById('username') || document.getElementById('email');
             const passwordInput = document.getElementById('password');
 
-            // 안전장치: 입력창이 진짜 있는지 확인
-            if (!emailInput || !passwordInput) {//비교연산자 띄어쓰기 수정함-현주-
-                alert("오류: HTML에서 아이디 또는 비밀번호 입력창을 찾을 수 없습니다.");
+            if (!emailInput || !passwordInput) {
+                alert("오류: HTML에서 아이디 또는 비밀번호 입력창을 찾을 수 없습니다. (ID 확인 필요)");
                 return;
             }
 
-            // Supabase는 'email'이라는 파라미터를 원하므로, username 입력값을 email 변수에 담습니다.
             const email = emailInput.value;
             const password = passwordInput.value;
 
@@ -117,7 +130,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (error) {
                     console.error("로그인 실패:", error);
-                    // 자주 발생하는 에러 메시지 번역
                     if (error.message.includes("Invalid login credentials")) {
                         alert("아이디 또는 비밀번호가 일치하지 않습니다.");
                     } else if (error.message.includes("Email not confirmed")) {
@@ -128,10 +140,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
 
-                // 로그인 성공 시
                 console.log("로그인 성공:", data);
                 alert('로그인 되었습니다!');
-                window.location.href = 'my-info.html'; // 마이페이지로 이동
+                window.location.href = 'my-info.html'; 
 
             } catch (err) {
                 console.error("예상치 못한 오류:", err);
@@ -140,12 +151,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-
-
-
-
-
-
-
-
-
