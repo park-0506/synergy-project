@@ -87,33 +87,60 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- 4. 로그인 로직 ---
+    // --- 4. 로그인 로직 (수정됨) ---
     const loginForm = document.getElementById('login-form');
+    
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
+            e.preventDefault(); // 1. 폼의 기본 제출 동작(새로고침)을 막습니다.
+            console.log("로그인 시도 시작..."); 
 
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
+            // [수정 포인트] HTML의 id="username"을 찾도록 변경했습니다.
+            const emailInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+
+            // 안전장치: 입력창이 진짜 있는지 확인
+            if (!emailInput ||!passwordInput) {
+                alert("오류: HTML에서 아이디 또는 비밀번호 입력창을 찾을 수 없습니다.");
+                return;
+            }
+
+            // Supabase는 'email'이라는 파라미터를 원하므로, username 입력값을 email 변수에 담습니다.
+            const email = emailInput.value;
+            const password = passwordInput.value;
 
             try {
-                // 수정: [1] 인용 번호 제거됨
                 const { data, error } = await supabase.auth.signInWithPassword({
                     email: email,
                     password: password,
                 });
 
-                if (error) throw error;
+                if (error) {
+                    console.error("로그인 실패:", error);
+                    // 자주 발생하는 에러 메시지 번역
+                    if (error.message.includes("Invalid login credentials")) {
+                        alert("아이디 또는 비밀번호가 일치하지 않습니다.");
+                    } else if (error.message.includes("Email not confirmed")) {
+                        alert("이메일 인증이 완료되지 않았습니다. 메일함을 확인해주세요.");
+                    } else {
+                        alert("로그인 오류: " + error.message);
+                    }
+                    return;
+                }
 
+                // 로그인 성공 시
+                console.log("로그인 성공:", data);
                 alert('로그인 되었습니다!');
-                window.location.href = 'my-info.html';
+                window.location.href = 'my-info.html'; // 마이페이지로 이동
 
-            } catch (error) {
-                alert('로그인 실패: ' + error.message);
+            } catch (err) {
+                console.error("예상치 못한 오류:", err);
+                alert("시스템 오류가 발생했습니다.");
             }
         });
     }
 });
+
 
 
 
