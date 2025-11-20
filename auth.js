@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const passwordInput = document.getElementById('password');
 
             // 안전장치: 입력창이 진짜 있는지 확인
-            if (!emailInput ||!passwordInput) {
+            if (!emailInput || !passwordInput) {//비교연산자 띄어쓰기 수정함-현주-
                 alert("오류: HTML에서 아이디 또는 비밀번호 입력창을 찾을 수 없습니다.");
                 return;
             }
@@ -140,6 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
 
 
 
