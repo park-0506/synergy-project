@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 logoutButton = document.createElement('a');
                 logoutButton.id = 'logout-button';
                 logoutButton.textContent = '로그아웃';
-                logoutButton.href = '#'; //로그아웃 버튼 클릭시 연결될 페이지 연결 필요
+                logoutButton.href = '#'; 
                 logoutButton.style.marginLeft = '15px';
                 logoutButton.style.cursor = 'pointer';
                 myInfoLink.parentElement.appendChild(logoutButton);
@@ -140,6 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
 
 
 
