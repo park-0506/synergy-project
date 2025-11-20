@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // 수정: HTML id와 일치시킴 (password-confirm -> password_confirm)
             const passwordConfirm = document.getElementById('password_confirm').value; 
 
-            if (password!== passwordConfirm) {
+            if (password !== passwordConfirm) {
                 alert('비밀번호가 일치하지 않습니다.');
                 return;
             }
@@ -140,6 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
 
 
 
