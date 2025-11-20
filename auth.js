@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (myInfoLink) myInfoLink.style.display = 'inline-block';
 
             // 로그아웃 버튼이 없으면 생성
-            if (myInfoLink &&!logoutButton) {
+            if (myInfoLink && !logoutButton) {
                 logoutButton = document.createElement('a');
                 logoutButton.id = 'logout-button';
                 logoutButton.textContent = '로그아웃';
@@ -140,6 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
 
 
 
